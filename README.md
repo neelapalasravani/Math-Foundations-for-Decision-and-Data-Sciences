@@ -1,2 +1,2 @@
 # ISE-201
-Final_Project
+Math Foundation for Decision and Data Sciences
