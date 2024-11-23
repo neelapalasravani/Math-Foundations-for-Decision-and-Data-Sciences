@@ -1,0 +1,78 @@
+---
+title: "Hypothesis Testing"
+author: "Sravani Neelapala"
+date: "2023-12-4"
+output: html_document
+---
+
+```{r }
+library(tidyverse)
+library(dplyr)
+```
+
+```{r }
+indata <- read.csv("/Users/eric/Global YouTube Statistics.csv")
+dim(indata)
+head(indata)
+```
+
+Reference : https://www.globalmediainsight.com/blog/youtube-users-statistics/
+
+Calculating the mean of subscribers for the last 5 years.
+
+# 1) Null Hypothesis and Alternate Hypothesis
+Since the variance is unknown, we will perform single sample t-test H_O: = 38, H_1: < 38(one-sided test)
+
+```{r }
+# Reference distribution 
+ggplot(data = indata) + 
+geom_histogram(mapping = aes(x = log(subscribers), bins = 30))
+
+subscribers <- ggplot(data = indata, aes(sample = log(subscribers)))
+subscribers + stat_qq() + stat_qq_line()
+
+#test statistic
+t.test(log(indata$subscribers), alternative = c("less"), mu = log(38))
+
+```
+
+# Conclusion
+** we fail to reject null hypothesis because that the subscribers represented in this sample **
+
+
+# 2) Null hypothesis and Alternate Hypothesis
+
+H_O : = variances are equal ; H_1 : = Variances are not equal(two-sided test).
+
+```{r }
+# Reference distribution
+
+ggplot(data = indata) + geom_density(mapping = aes(x = log(uploads), color = as.factor(category)))
+
+ggplot(data = indata) + geom_boxplot(mapping = aes(x = as.factor(category), y = log(uploads)))
+
+
+data <- data.frame(
+  category = c(" Autos & Vehicles", " Entertainment","Howto & Style", " nan","People & Blogs", " Shows", "  Travel & Events", "Comedy", " Film & Animation", " Movies", "News & Politics", " Pets & Animals", "Sports", "Education", "Gaming", "  Music", "Nonprofits & Activism", "Science & Technology", "Trailers" )
+)
+data$category <- as.factor(data$category)
+str(data)
+
+indata$category <- as.factor(indata$category)
+summary(indata$category)
+
+sum(is.na(indata$category))
+
+
+# Test Statistic (F test)
+Entertainment <- indata[which(indata$category == "Entertainment"), "uploads"]
+Music <- indata[which(indata$category == "Music"), "uploads"]
+var.test(log(Entertainment), log(Music))
+
+```
+
+# Conclusion
+** we reject null hypothesis as p-value is less than the level of significance.**
+
+
+
