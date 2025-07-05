@@ -1,0 +1,237 @@
+---
+title: "EDA Project"
+author: "Sravani Neelapala"
+date: "2023-10-31"
+output: html_document
+---
+```{r }
+library(tidyverse)
+```
+
+
+```{r }
+indata <- read.csv("/Users/eric/Billionaires Statistics Dataset.csv")
+dim(indata)
+head(indata)
+```
+
+**There are 2640 observations and 35 variables from the dataset.
+
+```{r }
+#Summary of data
+summary(indata)
+```
+
+INTRODUCTION: Explore the distribution of wealth across various categories. 
+The distribution of the age of the billionaires.
+
+CITATION : https://www.kaggle.com/datasets/nelgiriyewithana/billionaires-statistics-dataset
+
+DATA COLLECTION: I collected data from one of the open sources given, namely the Kaggle website.I came across a Billionaires Statistics Data set (2023) and felt that it could be a familiar domain for me as well as for everyone to understand.
+
+The study is experimental because we convert certain numerical columns into categorical variables for better analysis. Additionally, we intent to remove columns that do not significantly contribute to extracting meaningful information from the data,as they merely duplicate information from other columns.
+
+UNITS OF OBSERVATION: The rows describe the top billionaire's for 2023 around the world.
+
+VARIABLES:  There are a total of 35 variables in the dataset. Out of this 35, I would like to focus more on finalWorth, age category, country, organization, source, selfMade, cpi_country etc.
+
+```{r }
+#Is it a data frame?
+is.data.frame(indata)
+```
+
+ ** It checks whether the input data is a data frame or not. **
+
+```{r }
+# Is it a data frame or a tibble?
+indata <- as_tibble(indata)
+is_tibble(indata)
+```
+
+** The 'indata' is in a data frame, and want to convert it into a tibble.**
+
+```{r }
+
+#checking for missing values
+sum(is.na(indata))
+```
+
+** There are 2063 missing values in the data frame. **
+
+```{r }
+
+#checking for duplicate values
+sum(duplicated(indata))
+```
+
+** There are no duplicate values in the data frame. **
+
+```{r }
+# Convert category into a factor
+indata$category <- as.factor(indata$category)
+summary(indata$category)
+
+# Convert country into a factor
+indata$country <- as.factor(indata$country)
+summary(indata$country)
+
+# Convert selfMade into a factor
+indata$selfMade <- as.factor(indata$selfMade)
+summary(indata$selfMade)
+
+#Convert gender into a factor
+indata$gender <- as.factor(indata$gender)
+summary(indata$gender)
+
+#Convert status into a factor
+indata$status <- as.factor(indata$status)
+summary(indata$status)
+
+#Convert title into a factor
+indata$title <- as.factor(indata$title)
+summary(indata$title)
+```
+
+
+```{r }
+#Remove extra columns
+indata_cleaned <- select(indata, -(residenceStateRegion:  countryOfCitizenship: birthDate: gross_primary_education_enrollment_country: industries))
+
+head(indata_cleaned)
+```
+
+# SUMMARY STATISTICS
+
+```{r }
+# Final Worth
+mode <- function(x, na.rm = TRUE){
+  which.max(tabulate(x))
+}
+
+indata %>%
+  summarise(mean = mean(finalWorth, na.rm = TRUE), 
+            median = median(finalWorth,na.rm = TRUE),
+            mode = mode(finalWorth, na.rm = TRUE),
+            var = var(finalWorth, na.rm = TRUE),
+            sd = sd(finalWorth, na.rm = TRUE)) 
+
+ max(indata$finalWorth) - min(indata$finalWorth)
+
+ 
+#Age  
+mode <- function(x, na.rm = TRUE){
+  which.max(tabulate(x))
+}
+
+indata %>%
+  summarise(mean = mean(age, na.rm = TRUE), 
+            median = median(age,na.rm = TRUE),
+            mode = mode(age, na.rm = TRUE),
+            var = var(age, na.rm = TRUE),
+            sd = sd(age, na.rm = TRUE)) 
+
+# Life expectancy 
+mode <- function(x, na.rm = TRUE){
+  which.max(tabulate(x))
+}
+ indata %>%
+  summarise(mean = mean(life_expectancy_country, na.rm = TRUE), 
+            median = median(life_expectancy_country,na.rm = TRUE),
+            mode = mode(life_expectancy_country, na.rm = TRUE),
+            var = var(life_expectancy_country, na.rm = TRUE),
+            sd = sd(life_expectancy_country, na.rm = TRUE)) 
+
+#Population of country 
+mode <- function(x, na.rm = TRUE){
+  which.max(tabulate(x))
+}
+ indata %>%
+  summarise(mean = mean(population_country, na.rm = TRUE), 
+            median = median(population_country,na.rm = TRUE),
+            mode = mode(population_country, na.rm = TRUE),
+            var = var(population_country, na.rm = TRUE),
+            sd = sd(population_country, na.rm = TRUE)) 
+
+```
+
+# VISUALIZATION
+
+```{r }
+# HISTOGRAM
+ggplot(data = indata) +
+   geom_histogram(mapping = aes(x =  rank), bins = 10) +
+   labs(title = "HISTOGRAM OF RANK", x = "rank", y  = "Frequency") +
+   theme(plot.title = element_text(color = "red", size = 25, face = "bold")) +
+   theme(text = element_text(size = 20))
+```
+
+** The rank of the billionaires in terms of finalWorth(Wealth) which shows a normal distribution**
+
+```{r }
+# HISTOGRAM
+ggplot(data = indata) +
+   geom_histogram(mapping = aes(x = age), bins = 20) +
+   labs(title = "HISTOGRAM OF AGE", x = "Age", y  = "Frequency") +
+   theme(plot.title = element_text(color = "red", size = 25, face = "bold")) +
+   theme(text = element_text(size = 20))
+```
+
+** The histogram visualizes the distribution of ages. The bell shape curve indicates that ages are broadly spread, with majority of the billionaires age falling in the middle range, gradually declining towards the extremes. **
+
+```{r }
+# BAR CHART
+indata %>%
+  group_by(category) %>%
+  summarise(Average = mean(finalWorth)) %>%
+  ggplot(aes(x = reorder(category, -Average), y = Average, fill = category)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  labs(title = "Average Final Worth by Category", x = "Category", y = "Average Final Worth") +
+  theme( plot.title = element_text(color = "red", size = 20, face = "bold")) +
+  theme(title= element_text(size = 15))
+
+```
+
+** The distribution shows the average finalWorth across different categories. Billionaires from Automotive, Telecom, Fashion&Retail category exhibit higher net worth when compared to the mean of the finalWorth. And the Construction&Engineering category have less finalWorth when compared with mean of finalWorth.**
+
+```{r }
+# BOX PLOT
+ggplot(data = indata, aes(x = residenceStateRegion, y = age)) + geom_boxplot() + coord_flip() +
+ labs(title = "Box Plot of Age Vs ResidenceStateRegions", x = "Residence State Region", y = "Age") +
+theme( plot.title = element_text(color = "red", size = 20, face = "bold")) +
+theme(text = element_text(size = 12))
+```
+
+** The age distribution across various residence state regions **
+
+```{r }
+
+# DENSITY PLOT
+ggplot(data = indata, aes(x = age, y = finalWorth)) +
+  geom_density_2d() +
+  labs(title = "Age vs Final Worth for Billionaires", x = "Age", y = "finalWorth") +
+  theme(plot.title = element_text(color = "red", size = 20, face = "bold")) +
+  theme(text = element_text(size = 20))
+
+```
+
+** This distribution shows how a finalWorth(represents wealth) is distributed among different age groups of billionaires. **
+
+# Hypothesis Testing 
+
+1) Null Hypothesis(H_O) : The average age of billionaires is equal to 65 years.(mean = 65 yrs)
+   Alternate Hypothesis(H_1) : The average age of billionaires is greater than 65 years. (mean > 65 yrs)
+   One - sided sample test.
+
+2) Null hypothesis(H_0) : There is no significant difference in the average net worth between self-made billionaires and those who inherited their wealth.
+   Alternate Hypothesis(H_1) : There is a significant difference in the average net worth between self-made billionaires and those who inherited their wealth.
+   
+3) Null hypothesis(H_O) : The success rate of billionaires in the technology industry is equal to the success rate in the Finance&Investments.
+  Alternate hypothesis(H_1) : The success rate of billionaires in the technology industry is different from the success rate in the finance&Investments.
+
+
+
+
+
+
+
