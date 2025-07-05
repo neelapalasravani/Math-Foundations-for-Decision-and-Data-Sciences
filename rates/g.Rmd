@@ -1,0 +1,105 @@
+---
+title: "Global Youtube Statistics 2023"
+author: "Sravani Neelapala"
+date: "2023-09-01"
+output: html_document
+---
+## R Markdown
+```{r }
+library(tidyverse)
+```
+Introduction: When I was checking all the open sources for the datasets to analyze, I came across this 'Global YouTube Statistics 2023' from the Kaggle website.This dataset give information of top 1000 Youtubers around the world, which is a recent one to find information and a familiar domain for me as well as for anyone to understand. I felt this dataset is interesting because we can checkout the top 1000 Youtubers around the world and I felt I can attain a good knowledge from this dataset.By checking the comprehensive details of the top creators by their subscriber count, video views, upload frequency, country of origin,earnings and more.I want to analyze the position of the YouTube channel based on applying various columns from the datset like subscriber, video views, etc. Analyzing all this information could give a better understanding of people who aspire to become online content creators on YouTube. 
+
+** Citation: https://www.kaggle.com/datasets/nelgiriyewithana/global-youtube-statistics-2023 **
+
+Data Collection: I collected data from one of the open sources given, namely the Kaggle website.I came across a 'global YouTube Statistics 2023' data set and felt that it could be a familiar domain for me as well as for everyone to understand.
+
+Cases: The rows describe the top 1000 YouTubers from around the world who are online content creators.
+
+Variables: There are a total of 28 variables in the dataset. Out of this 28, I would like to focus more on subscribers, video views, category, uploads, country, earnings and channel rank,etc.
+
+Type of Study: The study is experimental because we convert certain numerical columns into categorical variables for better analysis. Additionally, we intent to remove columns that do not significantly contribute to extracting meaningful information from the data,as they merely duplicate information from other columns.
+
+```{r }
+indata <- read.csv("/Users/eric/Global YouTube Statistics.csv")
+
+# Check if data import was as expected
+dim(indata)
+head(indata)
+```
+
+** This data has 995 observations and 28 variables,but it seems like it is not yet in the tidy format.**
+
+```{r }
+
+#Is it a data frame?
+is.data.frame(indata)
+```
+
+ ** It checks whether the input data is a data frame or not. **
+
+```{r }
+#
+indata <- as_tibble(indata)
+is_tibble(indata)
+```
+
+** The 'indata' is in a data frame, and want to convert it into a tibble.**
+
+```{r }
+#Summary of data
+summary(indata)
+```
+
+** Summary of the 'indata' dataset, comprising 28 variables of numerical, ordinal, continuous nature, featuring the mean, median, and interquartile range (IQR). This summary will be helpful for graph plotting. **
+
+```{r }
+
+# Convert Country into a factor 
+indata$Country <- as.factor(indata$Country)
+
+summary(indata$Country)
+
+# Convert category into a factor 
+indata$category <- as.factor(indata$category)
+
+summary(indata$category)
+
+#Convert created_year into a factor 
+indata$created_year <- as.factor(indata$created_year)
+
+summary(indata$created_year)
+
+#Convert created_month into a factor 
+indata$created_month <- as.factor(indata$created_month)
+
+summary(indata$created_month)
+```
+
+** Converting the 6 variables from 28 into a factor(categorical) variable. **
+
+```{r }
+#Remove extra columns
+indata_cleaned <- select(indata, -(Abbreviation:channel_type))
+
+head(indata_cleaned)
+```
+
+** From 28 variables we are removing extra columns of Abbreviation,channel_type for better analysis **
+
+```{r }
+#checking for missing values
+sum(is.na(indata))
+```
+
+** There are 1137 missing values in the data frame. **
+
+```{r }
+#checking for duplicate values
+sum(duplicated(indata))
+```
+
+** There are no duplicate values in the data frame. **
+
+
+

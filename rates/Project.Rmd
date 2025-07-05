@@ -1,0 +1,379 @@
+---
+title: "Global Youtube Statistics 2023"
+author: "Sravani Neelapala"
+date: "2023-09-05"
+output: html_document
+---
+## R Markdown
+
+```{r }
+library(tidyverse)
+library(dplyr)
+```
+Introduction: When I was checking all the open sources for the datasets to analyze, I came across this 'Global YouTube Statistics 2023' from the Kaggle website.This dataset give information of top 1000 Youtubers around the world, which is a recent one to find information and a familiar domain for me as well as for anyone to understand. I felt this dataset is interesting because we can checkout the top 1000 Youtubers around the world and I felt I can attain a good knowledge from this dataset.By checking the comprehensive details of the top creators by their subscriber count, video views, upload frequency, country of origin,earnings and more.I want to analyze the position of the YouTube channel based on applying various columns from the datset like subscriber, video views, etc. Analyzing all this information could give a better understanding of people who aspire to become online content creators on YouTube. 
+
+** Citation: https://www.kaggle.com/datasets/nelgiriyewithana/global-youtube-statistics-2023 **
+
+Data Collection: I collected data from one of the open sources given, namely the Kaggle website.I came across a 'global YouTube Statistics 2023' data set and felt that it could be a familiar domain for me as well as for everyone to understand.
+
+Cases: The rows describe the top 1000 YouTubers from around the world who are online content creators.
+
+Variables: There are a total of 28 variables in the dataset. Out of this 28, I would like to focus more on subscribers, video views, category, uploads, country, earnings and channel rank,etc.
+
+Type of Study: The study is experimental because we convert certain numerical columns into categorical variables for better analysis. Additionally, we intent to remove columns that do not significantly contribute to extracting meaningful information from the data,as they merely duplicate information from other columns.
+
+```{r }
+indata <- read.csv("/Users/Sravani/Desktop/Sravani DOCS/FALL 2023/ISE 201/Sravani- SJSU - 201/Global YouTube Statistics.csv")
+
+# Check if data import was as expected
+dim(indata)
+head(indata)
+```
+
+** This data has 995 observations and 28 variables,but it seems like it is not yet in the tidy format.**
+
+```{r }
+
+#Is it a data frame?
+is.data.frame(indata)
+```
+
+ ** It checks whether the input data is a data frame or not. **
+
+```{r }
+# data is in tibble format or not
+indata <- as_tibble(indata)
+is_tibble(indata)
+```
+
+** The 'indata' is in a data frame, and want to convert it into a tibble.**
+
+```{r }
+#Summary of data
+summary(indata)
+```
+
+** Summary of the 'indata' dataset, comprising 28 variables of numerical, ordinal, continuous nature, featuring the mean, median, and interquartile range (IQR). This summary will be helpful for graph plotting. **
+
+```{r }
+
+# Convert Country into a factor 
+indata$Country <- as.factor(indata$Country)
+
+summary(indata$Country)
+
+# Convert category into a factor 
+indata$category <- as.factor(indata$category)
+
+summary(indata$category)
+
+
+#Convert created_year into a factor 
+indata$created_year <- as.factor(indata$created_year)
+
+summary(indata$created_year)
+
+#Convert created_month into a factor 
+indata$created_month <- as.factor(indata$created_month)
+
+summary(indata$created_month)
+```
+
+** Converting the 6 variables from 28 into a factor(categorical) variable. **
+
+```{r }
+#Remove extra columns
+indata_cleaned <- select(indata, -(Abbreviation:channel_type))
+
+head(indata_cleaned)
+```
+
+** From 28 variables we are removing extra columns of Abbreviation,channel_type for better analysis **
+
+```{r }
+#checking for missing values
+sum(is.na(indata))
+
+```
+
+** There are 1286 missing values in the data frame. **
+
+```{r }
+#checking for duplicate values
+sum(duplicated(indata))
+```
+
+** There are no duplicate values in the data frame. **
+
+# SUMMARY STATISTICS
+
+```{r }
+# subscribers 
+mode <- function(x, na.rm = TRUE){
+  which.max(tabulate(x))
+}
+
+indata %>%
+  summarise(mean = mean(subscribers, na.rm = TRUE), 
+            median = median(subscribers,na.rm = TRUE),
+            mode = mode(subscribers, na.rm = TRUE),
+            var = var(subscribers, na.rm = TRUE),
+            sd = sd(subscribers, na.rm = TRUE)) 
+
+ max(indata$subscribers) - min(indata$subscribers)
+
+
+# video.views
+mode <- function(x, na.rm = TRUE){
+  which.max(tabulate(x))
+}
+
+indata %>%
+  summarise(mean = mean(video.views, na.rm = TRUE), 
+            median = median(video.views,na.rm = TRUE),
+            mode = mode(video.views, na.rm = TRUE),
+            var = var(video.views, na.rm = TRUE),
+            sd = sd(video.views, na.rm = TRUE)) 
+
+ max(indata$video.views) - min(indata$video.views)
+ 
+ # uploads
+mode <- function(x, na.rm = TRUE){
+  which.max(tabulate(x))
+}
+
+indata %>%
+  summarise(mean = mean(uploads, na.rm = TRUE), 
+            median = median(uploads,na.rm = TRUE),
+            mode = mode(uploads, na.rm = TRUE),
+            var = var(uploads, na.rm = TRUE),
+            sd = sd(uploads, na.rm = TRUE)) 
+
+ max(indata$uploads) - min(indata$uploads)
+ 
+mode <- function(x, na.rm = TRUE){
+  which.max(tabulate(x))
+}
+
+indata %>%
+  summarise(mean = mean(highest_yearly_earnings, na.rm = TRUE), 
+            median = median(highest_yearly_earnings,na.rm = TRUE),
+            mode = mode(highest_yearly_earnings, na.rm = TRUE),
+            var = var(highest_yearly_earnings, na.rm = TRUE),
+            sd = sd(highest_yearly_earnings, na.rm = TRUE)) 
+
+ max(indata$highest_yearly_earnings) - min(indata$highest_yearly_earnings)
+```
+
+# VISUALIZATION
+
+```{r }
+# HISTOGRAM
+ggplot(data = indata) +
+   geom_histogram(mapping = aes(x =  rank), bins = 10) +
+   labs(title = "HISTOGRAM OF RANK", x = "rank", y  = "Frequency") +
+   theme(plot.title = element_text(color = "red", size = 25, face = "bold")) +
+   theme(text = element_text(size = 20))
+```
+
+** The rank of the Global Youtube Statistics 2023 in terms of subscribers which shows a normal distribution**
+
+```{r }
+# HISTOGRAM
+ggplot(data = indata) +
+   geom_histogram(mapping = aes(x = subscribers), bins = 20) +
+   labs(title = "HISTOGRAM OF SUBSCRIBERS", x = "subscribers", y  = "Frequency") +
+   theme(plot.title = element_text(color = "red", size = 25, face = "bold")) +
+   theme(text = element_text(size = 20))
+
+```
+
+** The histogram visualizes the distribution of subscribers. The bell shape curve indicates that subscribers have a right-skewed distribution more on the left side and gradually decline towards the right. **
+
+```{r }
+# BAR CHART
+indata %>%
+  group_by(category) %>%
+  summarise(Average = mean(subscribers)) %>%
+  ggplot(aes(x = reorder(category, -Average), y = Average, fill = category)) +
+  geom_bar(stat = "identity") +
+  coord_flip() +
+  labs(title = "Average subscribers by Category", x = "Category", y = "subscribers") +
+  theme( plot.title = element_text(color = "red", size = 20, face = "bold")) +
+  theme(title= element_text(size = 15))
+```
+
+** The distribution shows the average subscribers across different categories. You tubers from the Shows, Trailers category exhibit higher number of subscribers when compared to the mean of the subscribers. And the Travel & Events category have less subscribers when compared with mean of subscribers.**
+
+```{r }
+# BOX PLOT
+ggplot(data = indata, aes(x = category, y = uploads)) + geom_boxplot() + coord_flip() +
+ labs(title = "Box Plot of uploads Vs category", x = "category", y = "uploads") +
+theme( plot.title = element_text(color = "red", size = 20, face = "bold")) +
+theme(text = element_text(size = 12))
+```
+
+** The uploads distribution across various categories. **
+
+```{r }
+# DENSITY PLOT
+ggplot(data = indata, aes(x = subscribers, y = uploads)) +
+  geom_density_2d() +
+  labs(title = "subscribers vs uploads for Youtubers", x = "subscribers", y = "uploads") +
+  theme(plot.title = element_text(color = "red", size = 20, face = "bold")) +
+  theme(text = element_text(size = 20))
+```
+
+** This distribution shows how uploads are distributed among different subscriber groups of Youtubers. **
+
+# HYPOTHESIS TESTING
+
+Reference : https://www.globalmediainsight.com/blog/youtube-users-statistics/
+
+Calculating the mean of subscribers for the last 5 years.
+
+# 1) Null Hypothesis and Alternate Hypothesis
+Since the variance is unknown, we will perform single sample t-test H_O: = 38, H_1: < 38(one-sided test)
+
+Here, the null hpothesis H_0: 38 is taken from the reference link provided.
+
+```{r }
+# Reference distribution 
+ggplot(data = indata) + 
+geom_histogram(mapping = aes(x = log(subscribers), bins = 30))
+
+subscribers <- ggplot(data = indata, aes(sample = log(subscribers)))
+subscribers + stat_qq() + stat_qq_line()
+
+#test statistic
+t.test(log(indata$subscribers), alternative = c("less"), mu = log(38))
+
+```
+
+# Conclusion
+** we fail to reject null hypothesis because that the subscribers represented in this sample **
+
+# 2) Null hypothesis and Alternate Hypothesis
+
+H_O : = variances are equal ; H_1 : = Variances are not equal(two-sided test).
+
+```{r }
+# Reference distribution
+library(ggplot2)
+
+ggplot(data = indata) +
+  geom_density(mapping = aes(x = log(uploads), color = as.factor(category)))
+
+ggplot(data = indata) +
+  geom_boxplot(mapping = aes(x = as.factor(category), y = log(uploads)))
+
+data <- data.frame(
+  category = c("Autos & Vehicles", "Entertainment", "Howto & Style", "nan", "People & Blogs", "Shows", "Travel & Events", "Comedy", "Film & Animation", "Movies", "News & Politics", "Pets & Animals", "Sports", "Education", "Gaming", "Music", "Nonprofits & Activism", "Science & Technology", "Trailers")
+)
+data$category <- as.factor(data$category)
+str(data)
+
+indata$category <- as.factor(indata$category)
+summary(indata$category)
+sum(is.na(indata$category))
+
+# Test Statistic (F test)
+Entertainment <- indata[indata$category == "Entertainment", "uploads"]
+Music <- indata[indata$category == "Music", "uploads"]
+
+# Checking for missing values in the uploads column
+sum(is.na(Entertainment))
+sum(is.na(Music))
+var.test(log(Entertainment[!is.na(Entertainment)]), log(Music[!is.na(Music)]))
+
+```
+
+# Conclusion
+** we reject null hypothesis as p-value is less than the level of significance.**
+
+# LINEAR REGRESSION
+
+ASSUMPTIONS FOR LINEAR REGRESSION:
+1) Independent and identically distributed
+2)Mean shiuld be equal to zero
+3)Constant variance.
+
+```{r }
+cor(indata[ , c('rank','subscribers','uploads','video.views')])
+```
+
+** It shows the correlation between rank, subscribers, uploads, video.views. **
+
+```{r }
+indata %>% 
+  ggplot(aes(x = subscribers, y = rank)) +
+  geom_point() + geom_smooth(method = 'lm')
+```
+
+** There is a negative correlation between subscribers and rank, if we look at the confidence interval we can identify the outliers **
+
+```{r }
+columns <- c('rank','subscribers','uploads','video.views')
+pairs(indata[, columns])
+```
+
+** There might be a correlation between regressors, and there is a relationship between regressors and the response. Here, rank and subscribers have negative relationship, while video.views and subscribers have a  positive relationship. **
+
+```{r }
+indata %>%
+  ggplot(aes(x = rank)) +
+  geom_histogram(binwidth = function(x) 2 * IQR(x) / (length(x)^(1/3)))
+```
+
+** The rank approximately looks like normal distribution **
+
+```{r }
+(lm.fit <- lm(rank ~ subscribers + uploads + video.views, data = indata))
+
+```
+
+** It prints the output with coefficient values where subscribers and uploads have negative correlation, and video.views have a positive correlation. There is a need to tackle the correlation between regressors by reducing it.**
+
+```{r }
+#residual plot
+fit_residuals <- lm.fit$residuals %>% as.data.frame()
+  fit_residuals %>%
+  ggplot (aes(sample = lm.fit$residuals)) + stat_qq(distribution = stats :: qnorm) +
+  stat_qq_line() + labs( y = "sample quantiles", x = "theoretical quantiles")  +
+  theme(text = element_text(size = 16))  
+
+```
+
+** It looks approximately normally distributed with a couple of outliers. **
+
+```{r }
+fit_residuals %>%
+  ggplot(aes(y = lm.fit$residuals, x = 1:nrow(fit_residuals))) +
+  geom_point() + labs(y = "residuals", x = "index") +
+  theme(text = element_text(size= 16))
+```
+
+** It might show a mean of 0 and no strong pattern(random distribution) **
+
+```{r }
+summary(lm.fit)
+```
+
+** Here, we are testing whether the coefficient of the regressors is statistically significant or not. Uploads and video.views are not statistically significant at 0.05 level. No relationship or contribution from them is evident, as their effects may be masked by other correlated regressors. It is necessary to reduce their correlation to extract the relevant regressors. **
+
+```{r }
+(lm.fit2 <- lm(rank ~ subscribers, data = indata))
+summary(lm.fit2)
+```
+
+** We want P value to be small. By conducting the hypothesis test each line, we observe the distribution that illustrates the relation between rank(response) and subscribers(regressors). **
+
+# CONCLUSION
+
+** The analysis on the 'Global YouTube Statistics 2023' dataset concentrates on the rank, number of subscribers, and category columns. The summary statistics and data visualization of categories, subscribers, rank, etc., provide better information for enthusiastic young YouTubers considering You Tube channels as their career field. The stakeholders can acknowledge how subscriber distribution across various categories helps them in making decisions.
+
+Statistical testing, including hypothesis testing, helps make inferences about the population based on the sample of data to make decisions about whether there is a significant difference is present or not through the null and alternate hypothesis test. The linear regression model allows checking the strength of the relationship between dependent variables(subscribers + uploads + video.views) and independent variable(rank) to make predictions.
+
+I cannot perform Principal Component Analysis(PCA) because the variables I chose have a higher number of categorical variables than the numeric ones. **
+
+
