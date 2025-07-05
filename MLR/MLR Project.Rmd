@@ -1,0 +1,88 @@
+---
+title: "MLR Project"
+author: "Sravani Neelapala"
+date: "2023-11-22"
+output: html_document
+---
+
+```{r }
+library(tidyverse)
+library(dplyr)
+```
+
+ASSUMPTIONS FOR LINEAR REGRESSION:
+1) Independent and indentically distributed
+2)Mean = 0
+3)Constant variance.
+
+
+```{r }
+indata <- read.csv("/Users/eric/Global YouTube Statistics.csv")
+dim(indata)
+head(indata)
+```
+
+```{r }
+cor(indata[ , c('rank','subscribers','uploads','video.views')])
+```
+
+```{r }
+indata %>% 
+  ggplot(aes(x = subscribers, y = rank)) +
+  geom_point() + geom_smooth(method = 'lm')
+```
+```{r }
+columns <- c('rank','subscribers','uploads','video.views')
+pairs(indata[, columns])
+```
+
+** Rank and subscribers have negative correlation, check with subscribers and uploads **
+
+```{r }
+indata %>%
+  ggplot(aes(x = rank)) +
+  geom_histogram(binwidth = function(x) 2 * IQR(x) / (length(x)^(1/3)))
+```
+
+```{r }
+(lm.fit <- lm(rank ~ subscribers + uploads + video.views, data = indata))
+
+```
+
+
+```{r }
+#residual plot
+fit_residuals <- lm.fit$residuals %>% as.data.frame()
+  fit_residuals %>%
+  ggplot (aes(sample = lm.fit$residuals)) + stat_qq(distribution = stats :: qnorm) +
+  stat_qq_line() + labs( y = "sample quantiles", x = "theoretical quantiles")  +
+  theme(text = element_text(size = 16))  
+
+```
+
+```{r }
+fit_residuals %>%
+  ggplot(aes(y = lm.fit$residuals, x = 1:nrow(fit_residuals))) +
+  geom_point() + labs(y = "residuals", x = "index") +
+  theme(text = element_text(size= 16))
+```
+
+```{r }
+summary(lm.fit)
+```
+
+
+```{r }
+(lm.fit2 <- lm(rank ~ subscribers, data = indata))
+summary(lm.fit2)
+```
+
+
+
+
+
+
+
+
+
+
